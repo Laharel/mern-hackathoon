@@ -17,6 +17,12 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
+import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
+import HomeIcon from '@material-ui/icons/Home';
+import { Link, NavLink, } from 'react-router-dom';
+
+
 
 const drawerWidth = 240;
 
@@ -144,14 +150,27 @@ export default function Navbar() {
                 </div>
                 <Divider />
                 <List>
-                    {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+                    <NavLink to="/signin">
+                    {['Home'].map((text, index) => (
                         <ListItem button key={text}>
                             <ListItemIcon>
-                                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                { <HomeIcon />}
                                 </ListItemIcon>
                             <ListItemText primary={text} />
                         </ListItem>
                     ))}
+                    </NavLink>
+                    <NavLink to="/signup">
+                    {['Home'].map((text, index) => (
+                        <ListItem button key={text}>
+                            <ListItemIcon>
+                                { <HomeIcon />}
+                                </ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItem>
+                    ))}
+                    </NavLink>
+                    
                 </List>
                 <Divider />
                 <List>
