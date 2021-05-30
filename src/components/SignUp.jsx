@@ -11,6 +11,8 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import AuthService from "../services/auth.service";
+
 
 const Copyright = () =>{
   return (
@@ -45,17 +47,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignUp = () =>{
+const SignUp = (props) =>{
   const classes = useStyles();
 
   const [firstname, setfirstname] = useState("");
   const [lastname, setlastname] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");  
   const [fnameError, setfnameError] = useState("");  
   const [lnameError, setlnameError] = useState("");  
   const [emailError, setemailError] = useState("");  
-  const [pwdError, setpwdError] = useState("");   
+  const [pwdError, setpwdError] = useState("");  
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [currentUser, setCurrentUser] = useState(undefined) 
   
   const createuser = (e) => {
       const newuser = { firstname, lastname,email, password };
@@ -86,6 +92,10 @@ const SignUp = () =>{
       }
   }
 
+  const handleUsername = (e) => {
+    setUsername(e.target.value)
+  }
+
   const handleemail = (e) => {
       setEmail(e.target.value);
       if(e.target.value.length < 1) {
@@ -98,15 +108,47 @@ const SignUp = () =>{
   }
 
   const handlepwd = (e) => {
-      setPassword(e.target.value);
-      if(e.target.value.length < 1) {
-          setpwdError("Password is required!");
-      } else if(e.target.value.length < 8) {
-          setpwdError("Password must be 8 characters or longer!");
-      }else{
-          setpwdError("");
-      }
+    setPassword(e.target.value);
+    if(e.target.value.length < 1) {
+        setpwdError("Password is required!");
+    } else if(e.target.value.length < 8) {
+        setpwdError("Password must be 8 characters or longer!");
+    }else{
+        setpwdError("");
+    }
   }
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    
+    setMessage("");
+    setLoading(true);
+    
+    // form.current.validateAll();
+    
+    // if (checkBtn.current.context._errors.length === 0) {
+    if (!fnameError && !lnameError && !pwdError && !emailError) {
+        AuthService.register(firstname, lastname, email, username, password).then(
+            () => {
+                props.history.push("/");
+                window.location.reload();
+            },
+            (error) => {
+                const resMessage =
+                    (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                    error.message ||
+                    error.toString();
+                        
+                setLoading(false);
+                setMessage(resMessage);
+            }
+        );
+    } else {
+    setLoading(false);
+    }
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -117,12 +159,12 @@ const SignUp = () =>{
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form onSubmit={createuser} className={classes.form} noValidate>
+        <form onSubmit={handleRegister} className={classes.form} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
                 autoComplete="fname"
-                name="firstName"
+                name="first_name"
                 variant="outlined"
                 required
                 fullWidth
@@ -143,12 +185,29 @@ const SignUp = () =>{
                 fullWidth
                 id="lastName"
                 label="Last Name"
-                name="lastName"
+                name="last_name"
                 autoComplete="lname"
                 onChange={ handlelname } />
                 {
                     lnameError ?
                     <p style={{color:'red'}}>{ lnameError }</p> :
+                    ''
+                }
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="username"
+                label="Username"
+                name="username"
+                autoComplete="username"
+                onChange={handleUsername}
+              />
+                {
+                    emailError ?
+                    <p style={{color:'red'}}>{ emailError }</p> :
                     ''
                 }
             </Grid>

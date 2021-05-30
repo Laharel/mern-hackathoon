@@ -21,6 +21,12 @@ import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import HomeIcon from '@material-ui/icons/Home';
 import { Link, NavLink, } from 'react-router-dom';
+import AuthService from '../services/auth.service'
+import { useState, useEffect } from "react";
+import PersonIcon from '@material-ui/icons/Person';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import add_user from './static/add_user.png'
 
 
 
@@ -95,6 +101,16 @@ export default function Navbar() {
     const classes = useStyles();
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
+    const [currentUser, setCurrentUser] = useState(undefined)
+
+    useEffect(() => {
+        
+        const user = AuthService.getCurrentUser();
+
+        if(user){
+            setCurrentUser(user)
+        }
+    }, [])
 
     const handleDrawerOpen = () => {
     setOpen(true);
@@ -103,6 +119,15 @@ export default function Navbar() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
+
+    const handleLogout = () =>{
+        AuthService.logout()
+        // props.history.push("/signin")
+        // window.location.reload();
+        window.location.href = '/signin';
+
+
+    }
 
     return (
         <div className={classes.root}>
@@ -113,22 +138,36 @@ export default function Navbar() {
                     [classes.appBarShift]: open,
                 })}
             >
-                <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        edge="start"
-                        className={clsx(classes.menuButton, {
-                            [classes.hide]: open,
-                        })}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" noWrap>
-                        Nerds With Attitude
-                    </Typography>
+                <Toolbar className="top-navbar">
+                    <span className="nav-span1">
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            onClick={handleDrawerOpen}
+                            edge="start"
+                            className={clsx(classes.menuButton, {
+                                [classes.hide]: open,
+                            })}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography variant="h6" noWrap>
+                            <NavLink to="/" className="logo">
+                                Nerds With Attitude
+                            </NavLink>
+                        </Typography>
+                    </span>
+
+                    <span className="nav-span2">
+                        {currentUser && (
+                            <NavLink className="nav-link button" to="#" onClick={handleLogout}>
+                            Logout
+                            </NavLink>
+                        )}
+                    </span>
+
                 </Toolbar>
+                
             </AppBar>
             <Drawer
                 variant="permanent"
@@ -150,27 +189,65 @@ export default function Navbar() {
                 </div>
                 <Divider />
                 <List>
-                    <NavLink to="/signin">
-                    {['Home'].map((text, index) => (
+                    <NavLink to="/" className="sidebar-link">
+                        {['Home'].map((text, index) => (
+                            <ListItem button key={text}>
+                                <ListItemIcon>
+                                    { <HomeIcon />}
+                                    </ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItem>
+                        ))}
+                    </NavLink> 
+                    {currentUser ? (
+                    <NavLink to="#" className="sidebar-link">
+                    {['My Account'].map((text, index) => (
                         <ListItem button key={text}>
                             <ListItemIcon>
-                                { <HomeIcon />}
+                                { <PersonIcon />}
+                                </ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItem>
+                    ))}
+                    </NavLink> 
+                    ):
+                    <NavLink to="/signin" className="sidebar-link">
+                    {['Sign In'].map((text, index) => (
+                        <ListItem button key={text}>
+                            <ListItemIcon>
+                                { <ExitToAppIcon />}
+                                </ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItem>
+                    ))}
+                    </NavLink> 
+                    }
+                        {currentUser && (
+                        <NavLink to="#" className="sidebar-link">
+                        {['Create Course'].map((text, index) => (
+                            <ListItem button key={text}>
+                                <ListItemIcon>
+                                    { <AddBoxIcon/>}
+                                    </ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItem>
+                        ))}
+                        </NavLink>
+                        )} 
+                </List>
+                <List>  
+                    {!currentUser && (
+                        <NavLink to="/signup" className="sidebar-link">
+                    {['Sign Up'].map((text, index) => (
+                        <ListItem button key={text}>
+                            <ListItemIcon>
+                            <img src={add_user} width='25px' />
                                 </ListItemIcon>
                             <ListItemText primary={text} />
                         </ListItem>
                     ))}
                     </NavLink>
-                    <NavLink to="/signup">
-                    {['Home'].map((text, index) => (
-                        <ListItem button key={text}>
-                            <ListItemIcon>
-                                { <HomeIcon />}
-                                </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItem>
-                    ))}
-                    </NavLink>
-                    
+                    )} 
                 </List>
                 <Divider />
                 <List>

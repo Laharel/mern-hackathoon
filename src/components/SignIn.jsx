@@ -56,7 +56,7 @@ const SignIn = (props) =>{
   const login = (e) => {
     const user = { email, password };
     console.log("Welcome", user);
-};
+  };
   const handleemail = (e) => {
     setEmail(e.target.value);
     if(e.target.value.length < 1) {
@@ -66,7 +66,7 @@ const SignIn = (props) =>{
     }else{
         setemailError("");
     }
-}
+  }
 
   const handlepwd = (e) => {
     setPassword(e.target.value);
